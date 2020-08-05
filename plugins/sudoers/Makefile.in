@@ -48,7 +48,6 @@ FLEX = @FLEX@
 YACC = @YACC@
 SED = @SED@
 AWK = @AWK@
-PERL = perl
 
 # Our install program supports extra flags...
 INSTALL = $(SHELL) $(top_srcdir)/install-sh -c
@@ -357,7 +356,7 @@ $(devdir)/toke.c: $(srcdir)/toke.l prologue
 	    else \
 		toke_l="$(srcdir)/toke.l"; \
 	    fi; \
-	    cmd='$(FLEX) '"$$toke_l"'; cp prologue $(devdir)/toke.c; $(SED) "s/^\\(#line .*\\) \"lex\\.sudoers\\.c\"/\1 \"toke.c\"/" lex.sudoers.c >> $(devdir)/toke.c; rm -f lex.sudoers.c'; \
+	    cmd='$(FLEX) '"$$toke_l"'; cp prologue $(devdir)/toke.c; $(SED) -e "s/^\\(#line .*\\) \"lex\\.sudoers\\.c\"/\1 \"toke.c\"/" -e "s:/\* *FALLTHROUGH *\*/:FALLTHROUGH;:" lex.sudoers.c >> $(devdir)/toke.c; rm -f lex.sudoers.c'; \
 	    echo "$$cmd"; eval $$cmd; \
 	fi
 
@@ -375,7 +374,7 @@ $(devdir)/getdate.c: $(srcdir)/getdate.y prologue
 
 $(devdir)/def_data.c $(devdir)/def_data.h: $(srcdir)/def_data.in
 	@if [ -n "$(DEVEL)" ]; then \
-	    cmd='$(PERL) $(srcdir)/mkdefaults -o $(devdir)/def_data $(srcdir)/def_data.in'; \
+	    cmd='AWK=$(AWK) $(SHELL) $(srcdir)/mkdefaults -o $(devdir)/def_data $(srcdir)/def_data.in'; \
 	    echo "$$cmd"; eval $$cmd; \
 	fi
 
